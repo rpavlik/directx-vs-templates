@@ -253,7 +253,7 @@ void Game::CreateDevice()
     // Check for 4k swapchain support
     D3D12XBOX_GPU_HARDWARE_CONFIGURATION hwConfig = {};
     m_d3dDevice->GetGpuHardwareConfigurationX(&hwConfig);
-    if (hwConfig.HardwareVersion >= D3D12XBOX_HARDWARE_VERSION_SCORPIO)
+    if (hwConfig.HardwareVersion >= D3D12XBOX_HARDWARE_VERSION_XBOX_ONE_X)
     {
         m_outputWidth = 3840;
         m_outputHeight = 2160;

@@ -181,7 +181,7 @@ void Game::CreateDevice()
     // Check for 4k swapchain support
     D3D11X_GPU_HARDWARE_CONFIGURATION hwConfig = {};
     m_d3dDevice->GetGpuHardwareConfiguration(&hwConfig);
-    if (hwConfig.HardwareVersion >= D3D11X_HARDWARE_VERSION_SCORPIO)
+    if (hwConfig.HardwareVersion >= D3D11X_HARDWARE_VERSION_XBOX_ONE_X)
     {
         m_outputWidth = 3840;
         m_outputHeight = 2160;
@@ -221,7 +221,7 @@ void Game::CreateResources()
         DX::ThrowIfFailed(dxgiAdapter->GetParent(IID_GRAPHICS_PPV_ARGS(dxgiFactory.GetAddressOf())));
 
         // Create a descriptor for the swap chain.
-        DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {0};
+        DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
         swapChainDesc.Width = backBufferWidth;
         swapChainDesc.Height = backBufferHeight;
         swapChainDesc.Format = backBufferFormat;
