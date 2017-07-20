@@ -1,0 +1,33 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>Direct3D 12 Game</Name>
+    <Description>A project for a Xbox One Game that uses Direct3D 12 and C++/CX</Description>
+    <ProjectType>VC</ProjectType>
+    <ProjectSubType>Durango</ProjectSubType>
+    <SortOrder>1000</SortOrder>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>Direct3DGame</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <Icon>__TemplateIcon.ico</Icon>
+    <PreviewImage>__PreviewImage.ico</PreviewImage>
+  </TemplateData>
+  <TemplateContent>
+    <Project ReplaceParameters="true" File="D3D12Game.vcxproj">
+      <ProjectItem ReplaceParameters="true" TargetFileName="$projectname$.vcxproj.filters">D3D12Game.vcxproj.filters</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Main.cpp">Main.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Game.cpp" OpenInEditor="true">Game.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="pch.cpp">pch.cpp</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="StepTimer.h">StepTimer.h</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Game.h">Game.h</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="pch.h">pch.h</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Logo.png">Logo.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="SmallLogo.png">SmallLogo.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="SplashScreen.png">SplashScreen.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="StoreLogo.png">StoreLogo.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="WideLogo.png">WideLogo.png</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Package.appxmanifest">Package.appxmanifest</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>
