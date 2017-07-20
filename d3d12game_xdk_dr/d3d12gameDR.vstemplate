@@ -32,4 +32,8 @@
       <ProjectItem ReplaceParameters="true" TargetFileName="Package.appxmanifest">Package.appxmanifest</ProjectItem>
     </Project>
   </TemplateContent>
+  <WizardExtension>
+    <Assembly>Wizards, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6ec6932595dd21ee</Assembly>
+    <FullClassName>Wizards.MyPlatformToolset</FullClassName>
+  </WizardExtension>
 </VSTemplate>
