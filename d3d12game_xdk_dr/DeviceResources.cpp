@@ -6,6 +6,7 @@
 #include "DeviceResources.h"
 
 using namespace DirectX;
+using namespace DX;
 
 using Microsoft::WRL::ComPtr;
 
@@ -24,7 +25,7 @@ namespace
 };
 
 // Constructor for DeviceResources.
-DX::DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthBufferFormat, UINT backBufferCount, unsigned int flags) :
+DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthBufferFormat, UINT backBufferCount, unsigned int flags) :
     m_backBufferIndex(0),
     m_fenceValues{},
     m_rtvDescriptorSize(0),
@@ -45,14 +46,14 @@ DX::DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT d
 }
 
 // Destructor for DeviceResources.
-DX::DeviceResources::~DeviceResources()
+DeviceResources::~DeviceResources()
 {
     // Ensure that the GPU is no longer referencing resources that are about to be destroyed.
     WaitForGpu();
 }
 
 // Configures the Direct3D device, and stores handles to it and the device context.
-void DX::DeviceResources::CreateDeviceResources()
+void DeviceResources::CreateDeviceResources()
 {
     // Create the DX12 API device object.
     D3D12XBOX_CREATE_DEVICE_PARAMETERS params = {};
@@ -70,7 +71,7 @@ void DX::DeviceResources::CreateDeviceResources()
     params.GraphicsScratchMemorySizeBytes = static_cast<UINT>(D3D12XBOX_DEFAULT_SIZE_BYTES);
     params.ComputeScratchMemorySizeBytes = static_cast<UINT>(D3D12XBOX_DEFAULT_SIZE_BYTES);
 
-    DX::ThrowIfFailed(D3D12XboxCreateDevice(
+    ThrowIfFailed(D3D12XboxCreateDevice(
         nullptr,
         &params,
         IID_GRAPHICS_PPV_ARGS(m_d3dDevice.ReleaseAndGetAddressOf())
@@ -81,14 +82,14 @@ void DX::DeviceResources::CreateDeviceResources()
     queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
     queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-    DX::ThrowIfFailed(m_d3dDevice->CreateCommandQueue(&queueDesc, IID_GRAPHICS_PPV_ARGS(m_commandQueue.ReleaseAndGetAddressOf())));
+    ThrowIfFailed(m_d3dDevice->CreateCommandQueue(&queueDesc, IID_GRAPHICS_PPV_ARGS(m_commandQueue.ReleaseAndGetAddressOf())));
 
     // Create descriptor heaps for render target views and depth stencil views.
     D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc = {};
     rtvDescriptorHeapDesc.NumDescriptors = m_backBufferCount;
     rtvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 
-    DX::ThrowIfFailed(m_d3dDevice->CreateDescriptorHeap(&rtvDescriptorHeapDesc, IID_GRAPHICS_PPV_ARGS(m_rtvDescriptorHeap.ReleaseAndGetAddressOf())));
+    ThrowIfFailed(m_d3dDevice->CreateDescriptorHeap(&rtvDescriptorHeapDesc, IID_GRAPHICS_PPV_ARGS(m_rtvDescriptorHeap.ReleaseAndGetAddressOf())));
 
     m_rtvDescriptorSize = m_d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
@@ -98,21 +99,21 @@ void DX::DeviceResources::CreateDeviceResources()
         dsvDescriptorHeapDesc.NumDescriptors = 1;
         dsvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 
-        DX::ThrowIfFailed(m_d3dDevice->CreateDescriptorHeap(&dsvDescriptorHeapDesc, IID_GRAPHICS_PPV_ARGS(m_dsvDescriptorHeap.ReleaseAndGetAddressOf())));
+        ThrowIfFailed(m_d3dDevice->CreateDescriptorHeap(&dsvDescriptorHeapDesc, IID_GRAPHICS_PPV_ARGS(m_dsvDescriptorHeap.ReleaseAndGetAddressOf())));
     }
 
     // Create a command allocator for each back buffer that will be rendered to.
     for (UINT n = 0; n < m_backBufferCount; n++)
     {
-        DX::ThrowIfFailed(m_d3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_GRAPHICS_PPV_ARGS(m_commandAllocators[n].ReleaseAndGetAddressOf())));
+        ThrowIfFailed(m_d3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_GRAPHICS_PPV_ARGS(m_commandAllocators[n].ReleaseAndGetAddressOf())));
     }
 
     // Create a command list for recording graphics commands.
-    DX::ThrowIfFailed(m_d3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[0].Get(), nullptr, IID_GRAPHICS_PPV_ARGS(m_commandList.ReleaseAndGetAddressOf())));
-    DX::ThrowIfFailed(m_commandList->Close());
+    ThrowIfFailed(m_d3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[0].Get(), nullptr, IID_GRAPHICS_PPV_ARGS(m_commandList.ReleaseAndGetAddressOf())));
+    ThrowIfFailed(m_commandList->Close());
 
     // Create a fence for tracking GPU execution progress.
-    DX::ThrowIfFailed(m_d3dDevice->CreateFence(m_fenceValues[m_backBufferIndex], D3D12_FENCE_FLAG_NONE, IID_GRAPHICS_PPV_ARGS(m_fence.ReleaseAndGetAddressOf())));
+    ThrowIfFailed(m_d3dDevice->CreateFence(m_fenceValues[m_backBufferIndex], D3D12_FENCE_FLAG_NONE, IID_GRAPHICS_PPV_ARGS(m_fence.ReleaseAndGetAddressOf())));
     m_fenceValues[m_backBufferIndex]++;
 
     m_fenceEvent.Attach(CreateEvent(nullptr, FALSE, FALSE, nullptr));
@@ -143,7 +144,7 @@ void DX::DeviceResources::CreateDeviceResources()
 }
 
 // These resources need to be recreated every time the window size is changed.
-void DX::DeviceResources::CreateWindowSizeDependentResources()
+void DeviceResources::CreateWindowSizeDependentResources()
 {
     if (!m_window)
     {
@@ -169,7 +170,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
     if (m_swapChain)
     {
         // If the swap chain already exists, resize it.
-        DX::ThrowIfFailed(m_swapChain->ResizeBuffers(
+        ThrowIfFailed(m_swapChain->ResizeBuffers(
             m_backBufferCount,
             backBufferWidth,
             backBufferHeight,
@@ -183,15 +184,15 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
     {
         // First, retrieve the underlying DXGI device from the D3D device.
         ComPtr<IDXGIDevice1> dxgiDevice;
-        DX::ThrowIfFailed(m_d3dDevice.As(&dxgiDevice));
+        ThrowIfFailed(m_d3dDevice.As(&dxgiDevice));
 
         // Identify the physical adapter (GPU or card) this device is running on.
         ComPtr<IDXGIAdapter> dxgiAdapter;
-        DX::ThrowIfFailed(dxgiDevice->GetAdapter(dxgiAdapter.GetAddressOf()));
+        ThrowIfFailed(dxgiDevice->GetAdapter(dxgiAdapter.GetAddressOf()));
 
         // And obtain the factory object that created it.
         ComPtr<IDXGIFactory2> dxgiFactory;
-        DX::ThrowIfFailed(dxgiAdapter->GetParent(IID_GRAPHICS_PPV_ARGS(dxgiFactory.GetAddressOf())));
+        ThrowIfFailed(dxgiAdapter->GetParent(IID_GRAPHICS_PPV_ARGS(dxgiFactory.GetAddressOf())));
 
         // Create a descriptor for the swap chain.
         DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
@@ -209,7 +210,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 
         // Create a swap chain for the window.
         ComPtr<IDXGISwapChain1> swapChain;
-        DX::ThrowIfFailed(dxgiFactory->CreateSwapChainForCoreWindow(
+        ThrowIfFailed(dxgiFactory->CreateSwapChainForCoreWindow(
             m_d3dDevice.Get(), // Xbox One uses device here, not the command queue!
             m_window,
             &swapChainDesc,
@@ -222,7 +223,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
     // and create render target views for each of them.
     for (UINT n = 0; n < m_backBufferCount; n++)
     {
-        DX::ThrowIfFailed(m_swapChain->GetBuffer(n, IID_GRAPHICS_PPV_ARGS(m_renderTargets[n].GetAddressOf())));
+        ThrowIfFailed(m_swapChain->GetBuffer(n, IID_GRAPHICS_PPV_ARGS(m_renderTargets[n].GetAddressOf())));
 
         wchar_t name[25] = {};
         swprintf_s(name, L"Render target %u", n);
@@ -259,7 +260,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
         depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
         depthOptimizedClearValue.DepthStencil.Stencil = 0;
 
-        DX::ThrowIfFailed(m_d3dDevice->CreateCommittedResource(
+        ThrowIfFailed(m_d3dDevice->CreateCommittedResource(
             &depthHeapProperties,
             D3D12_HEAP_FLAG_NONE,
             &depthStencilDesc,
@@ -290,11 +291,11 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 }
 
 // Prepare the command list and render target for rendering.
-void DX::DeviceResources::Prepare(D3D12_RESOURCE_STATES beforeState)
+void DeviceResources::Prepare(D3D12_RESOURCE_STATES beforeState)
 {
     // Reset command list and allocator.
-    DX::ThrowIfFailed(m_commandAllocators[m_backBufferIndex]->Reset());
-    DX::ThrowIfFailed(m_commandList->Reset(m_commandAllocators[m_backBufferIndex].Get(), nullptr));
+    ThrowIfFailed(m_commandAllocators[m_backBufferIndex]->Reset());
+    ThrowIfFailed(m_commandList->Reset(m_commandAllocators[m_backBufferIndex].Get(), nullptr));
 
     if (beforeState != D3D12_RESOURCE_STATE_RENDER_TARGET)
     {
@@ -305,7 +306,7 @@ void DX::DeviceResources::Prepare(D3D12_RESOURCE_STATES beforeState)
 }
 
 // Present the contents of the swap chain to the screen.
-void DX::DeviceResources::Present(D3D12_RESOURCE_STATES beforeState)
+void DeviceResources::Present(D3D12_RESOURCE_STATES beforeState)
 {
     if (beforeState != D3D12_RESOURCE_STATE_PRESENT)
     {
@@ -315,13 +316,13 @@ void DX::DeviceResources::Present(D3D12_RESOURCE_STATES beforeState)
     }
 
     // Send the command list off to the GPU for processing.
-    DX::ThrowIfFailed(m_commandList->Close());
+    ThrowIfFailed(m_commandList->Close());
     m_commandQueue->ExecuteCommandLists(1, CommandListCast(m_commandList.GetAddressOf()));
 
     // The first argument instructs DXGI to block until VSync, putting the application
     // to sleep until the next VSync. This ensures we don't waste any cycles rendering
     // frames that will never be displayed to the screen.
-    DX::ThrowIfFailed(m_swapChain->Present(1, 0));
+    ThrowIfFailed(m_swapChain->Present(1, 0));
 
     // Xbox One apps do not need to handle DXGI_ERROR_DEVICE_REMOVED or DXGI_ERROR_DEVICE_RESET.
 
@@ -329,7 +330,7 @@ void DX::DeviceResources::Present(D3D12_RESOURCE_STATES beforeState)
 }
 
 // Wait for pending GPU work to complete.
-void DX::DeviceResources::WaitForGpu() noexcept
+void DeviceResources::WaitForGpu() noexcept
 {
     if (m_commandQueue && m_fence && m_fenceEvent.IsValid())
     {
@@ -350,11 +351,11 @@ void DX::DeviceResources::WaitForGpu() noexcept
 }
 
 // Prepare to render the next frame.
-void DX::DeviceResources::MoveToNextFrame()
+void DeviceResources::MoveToNextFrame()
 {
     // Schedule a Signal command in the queue.
     const UINT64 currentFenceValue = m_fenceValues[m_backBufferIndex];
-    DX::ThrowIfFailed(m_commandQueue->Signal(m_fence.Get(), currentFenceValue));
+    ThrowIfFailed(m_commandQueue->Signal(m_fence.Get(), currentFenceValue));
 
     // Update the back buffer index.
     m_backBufferIndex = (m_backBufferIndex + 1) % m_backBufferCount;
@@ -362,7 +363,7 @@ void DX::DeviceResources::MoveToNextFrame()
     // If the next frame is not ready to be rendered yet, wait until it is ready.
     if (m_fence->GetCompletedValue() < m_fenceValues[m_backBufferIndex])
     {
-        DX::ThrowIfFailed(m_fence->SetEventOnCompletion(m_fenceValues[m_backBufferIndex], m_fenceEvent.Get()));
+        ThrowIfFailed(m_fence->SetEventOnCompletion(m_fenceValues[m_backBufferIndex], m_fenceEvent.Get()));
         WaitForSingleObjectEx(m_fenceEvent.Get(), INFINITE, FALSE);
     }
 

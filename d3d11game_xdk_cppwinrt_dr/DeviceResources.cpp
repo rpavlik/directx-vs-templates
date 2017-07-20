@@ -7,11 +7,12 @@
 #include "DeviceResources.h"
 
 using namespace DirectX;
+using namespace DX;
 
 using Microsoft::WRL::ComPtr;
 
 // Constructor for DeviceResources.
-DX::DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthBufferFormat, UINT backBufferCount, unsigned int flags) :
+DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthBufferFormat, UINT backBufferCount, unsigned int flags) :
     m_screenViewport{},
     m_backBufferFormat(backBufferFormat),
     m_depthBufferFormat(depthBufferFormat),
@@ -24,7 +25,7 @@ DX::DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT d
 }
 
 // Configures the Direct3D device, and stores handles to it and the device context.
-void DX::DeviceResources::CreateDeviceResources()
+void DeviceResources::CreateDeviceResources()
 {
     D3D11X_CREATE_DEVICE_PARAMETERS params = {};
     params.Version = D3D11_SDK_VERSION;
@@ -43,7 +44,7 @@ void DX::DeviceResources::CreateDeviceResources()
     }
 
     // Create the Direct3D 11 API device object and a corresponding context.
-    DX::ThrowIfFailed(D3D11XCreateDeviceX(
+    ThrowIfFailed(D3D11XCreateDeviceX(
         &params,
         m_d3dDevice.ReleaseAndGetAddressOf(),
         m_d3dContext.ReleaseAndGetAddressOf()
@@ -90,7 +91,7 @@ void DX::DeviceResources::CreateDeviceResources()
 }
 
 // These resources need to be recreated every time the window size is changed.
-void DX::DeviceResources::CreateWindowSizeDependentResources()
+void DeviceResources::CreateWindowSizeDependentResources()
 {
     if (!m_window)
     {
@@ -113,7 +114,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
     if (m_swapChain)
     {
         // If the swap chain already exists, resize it.
-        DX::ThrowIfFailed(m_swapChain->ResizeBuffers(
+        ThrowIfFailed(m_swapChain->ResizeBuffers(
             m_backBufferCount,
             backBufferWidth,
             backBufferHeight,
@@ -129,13 +130,13 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 
         // This sequence obtains the DXGI factory that was used to create the Direct3D device above.
         ComPtr<IDXGIDevice1> dxgiDevice;
-        DX::ThrowIfFailed(m_d3dDevice.As(&dxgiDevice));
+        ThrowIfFailed(m_d3dDevice.As(&dxgiDevice));
 
         ComPtr<IDXGIAdapter> dxgiAdapter;
-        DX::ThrowIfFailed(dxgiDevice->GetAdapter(dxgiAdapter.GetAddressOf()));
+        ThrowIfFailed(dxgiDevice->GetAdapter(dxgiAdapter.GetAddressOf()));
 
         ComPtr<IDXGIFactory2> dxgiFactory;
-        DX::ThrowIfFailed(dxgiAdapter->GetParent(IID_GRAPHICS_PPV_ARGS(dxgiFactory.GetAddressOf())));
+        ThrowIfFailed(dxgiAdapter->GetParent(IID_GRAPHICS_PPV_ARGS(dxgiFactory.GetAddressOf())));
 
         DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
         swapChainDesc.Width = backBufferWidth;
@@ -151,7 +152,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
         swapChainDesc.Flags = DXGIX_SWAP_CHAIN_FLAG_QUANTIZATION_RGB_FULL;
 
         // Create a SwapChain from a CoreWindow.
-        DX::ThrowIfFailed(dxgiFactory->CreateSwapChainForCoreWindow(
+        ThrowIfFailed(dxgiFactory->CreateSwapChainForCoreWindow(
             m_d3dDevice.Get(),
             m_window,
             &swapChainDesc,
@@ -161,9 +162,9 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
     }
 
     // Create a render target view of the swap chain back buffer.
-    DX::ThrowIfFailed(m_swapChain->GetBuffer(0, IID_GRAPHICS_PPV_ARGS(m_renderTarget.ReleaseAndGetAddressOf())));
+    ThrowIfFailed(m_swapChain->GetBuffer(0, IID_GRAPHICS_PPV_ARGS(m_renderTarget.ReleaseAndGetAddressOf())));
 
-    DX::ThrowIfFailed(m_d3dDevice->CreateRenderTargetView(
+    ThrowIfFailed(m_d3dDevice->CreateRenderTargetView(
         m_renderTarget.Get(),
         nullptr,
         m_d3dRenderTargetView.ReleaseAndGetAddressOf()
@@ -181,14 +182,14 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
             D3D11_BIND_DEPTH_STENCIL
             );
 
-        DX::ThrowIfFailed(m_d3dDevice->CreateTexture2D(
+        ThrowIfFailed(m_d3dDevice->CreateTexture2D(
             &depthStencilDesc,
             nullptr,
             m_depthStencil.ReleaseAndGetAddressOf()
             ));
 
         CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(D3D11_DSV_DIMENSION_TEXTURE2D);
-        DX::ThrowIfFailed(m_d3dDevice->CreateDepthStencilView(
+        ThrowIfFailed(m_d3dDevice->CreateDepthStencilView(
             m_depthStencil.Get(),
             &depthStencilViewDesc,
             m_d3dDepthStencilView.ReleaseAndGetAddressOf()
@@ -209,11 +210,11 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 }
 
 // Prepare the render target for rendering.
-void DX::DeviceResources::Prepare()
+void DeviceResources::Prepare()
 {
     if (m_options & c_FastSemantics)
     {
-        DX::ThrowIfFailed(m_swapChain->GetBuffer(0, IID_GRAPHICS_PPV_ARGS(m_renderTarget.ReleaseAndGetAddressOf())));
+        ThrowIfFailed(m_swapChain->GetBuffer(0, IID_GRAPHICS_PPV_ARGS(m_renderTarget.ReleaseAndGetAddressOf())));
 
         m_d3dDevice->PlaceSwapChainView(m_renderTarget.Get(), m_d3dRenderTargetView.Get());
 
@@ -222,7 +223,7 @@ void DX::DeviceResources::Prepare()
 }
 
 // Present the contents of the swap chain to the screen.
-void DX::DeviceResources::Present(UINT decompressFlags)
+void DeviceResources::Present(UINT decompressFlags)
 {
     if ((m_options & c_FastSemantics) != 0 && decompressFlags != 0)
     {
@@ -235,7 +236,7 @@ void DX::DeviceResources::Present(UINT decompressFlags)
     // The first argument instructs DXGI to block until VSync, putting the application
     // to sleep until the next VSync. This ensures we don't waste any cycles rendering
     // frames that will never be displayed to the screen.
-    DX::ThrowIfFailed(m_swapChain->Present(1, 0));
+    ThrowIfFailed(m_swapChain->Present(1, 0));
 
     // Xbox One apps do not need to handle DXGI_ERROR_DEVICE_REMOVED or DXGI_ERROR_DEVICE_RESET.
 }
