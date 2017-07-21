@@ -12,6 +12,8 @@ using namespace winrt::Windows::UI::Core;
 using namespace winrt::Windows::Foundation;
 using namespace DirectX;
 
+bool g_HDRMode = false;
+
 class ViewProvider final : public winrt::implements<ViewProvider, IFrameworkView>
 {
 public:
@@ -30,6 +32,26 @@ public:
         CoreApplication::Resuming({ this, &ViewProvider::OnResuming });
 
         m_game = std::make_unique<Game>();
+
+        if (m_game->RequestHDRMode())
+        {
+            // Request HDR mode.
+            auto determineHDR = winrt::Windows::Xbox::Graphics::Display::DisplayConfiguration::TrySetHdrModeAsync();
+
+            // In a real game, you'd do some initialization here to hide the HDR mode switch.
+
+            // Finish up HDR mode detection
+            while (determineHDR.Status() == AsyncStatus::Started) { Sleep(100); };
+            if (determineHDR.Status() != AsyncStatus::Completed)
+            {
+                throw std::exception("TrySetHdrModeAsync");
+            }
+            g_HDRMode = determineHDR.get().HdrEnabled();
+
+#ifdef _DEBUG
+            OutputDebugStringA((g_HDRMode) ? "INFO: Display in HDR Mode\n" : "INFO: Display in SDR Mode\n");
+#endif
+        }
     }
 
     void Uninitialize()

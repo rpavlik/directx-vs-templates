@@ -31,13 +31,14 @@ DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depth
     m_rtvDescriptorSize(0),
     m_screenViewport{},
     m_scissorRect{},
-    m_backBufferFormat(backBufferFormat),
+    m_backBufferFormat((flags & c_EnableHDR) ? DXGI_FORMAT_R10G10B10A2_UNORM : backBufferFormat),
     m_depthBufferFormat(depthBufferFormat),
     m_backBufferCount(backBufferCount),
     m_window(nullptr),
     m_d3dFeatureLevel(D3D_FEATURE_LEVEL_12_0),
     m_outputSize{0, 0, 1920, 1080},
-    m_options(flags)
+    m_options(flags),
+    m_gameDVRFormat((flags & c_EnableHDR) ? backBufferFormat : DXGI_FORMAT_UNKNOWN)
 {
     if (backBufferCount > MAX_BACK_BUFFER_COUNT)
     {
@@ -86,7 +87,7 @@ void DeviceResources::CreateDeviceResources()
 
     // Create descriptor heaps for render target views and depth stencil views.
     D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc = {};
-    rtvDescriptorHeapDesc.NumDescriptors = m_backBufferCount;
+    rtvDescriptorHeapDesc.NumDescriptors = (m_options & c_EnableHDR) ? (m_backBufferCount * 2) : m_backBufferCount;
     rtvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 
     ThrowIfFailed(m_d3dDevice->CreateDescriptorHeap(&rtvDescriptorHeapDesc, IID_GRAPHICS_PPV_ARGS(m_rtvDescriptorHeap.ReleaseAndGetAddressOf())));
@@ -165,6 +166,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
     for (UINT n = 0; n < m_backBufferCount; n++)
     {
         m_renderTargets[n].Reset();
+        m_renderTargetsGameDVR[n].Reset();
         m_fenceValues[n] = m_fenceValues[m_backBufferIndex];
     }
 
@@ -186,6 +188,17 @@ void DeviceResources::CreateWindowSizeDependentResources()
             ));
 
         // Xbox One apps do not need to handle DXGI_ERROR_DEVICE_REMOVED or DXGI_ERROR_DEVICE_RESET.
+
+        if (m_swapChainGameDVR)
+        {
+            ThrowIfFailed(m_swapChainGameDVR->ResizeBuffers(
+                m_backBufferCount,
+                backBufferWidth,
+                backBufferHeight,
+                m_gameDVRFormat,
+                0
+            ));
+        }
     }
     else
     {
@@ -213,7 +226,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
         swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
         swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
         swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
-        swapChainDesc.Flags = DXGIX_SWAP_CHAIN_FLAG_QUANTIZATION_RGB_FULL;
+        swapChainDesc.Flags = (m_options & c_EnableHDR) ? DXGIX_SWAP_CHAIN_FLAG_COLORIMETRY_RGB_BT2020_ST2084 : DXGIX_SWAP_CHAIN_FLAG_QUANTIZATION_RGB_FULL;
 
         // Create a swap chain for the window.
         ComPtr<IDXGISwapChain1> swapChain;
@@ -224,6 +237,21 @@ void DeviceResources::CreateWindowSizeDependentResources()
             nullptr,
             m_swapChain.ReleaseAndGetAddressOf()
             ));
+
+        if ((m_options & c_EnableHDR) && !m_swapChainGameDVR)
+        {
+            swapChainDesc.Format = m_gameDVRFormat;
+            swapChainDesc.Flags = DXGIX_SWAP_CHAIN_FLAG_QUANTIZATION_RGB_FULL;
+
+            // Create a SwapChain from a CoreWindow.
+            ThrowIfFailed(dxgiFactory->CreateSwapChainForCoreWindow(
+                m_d3dDevice.Get(),
+                m_window,
+                &swapChainDesc,
+                nullptr,
+                m_swapChainGameDVR.GetAddressOf()
+                ));
+        }
     }
 
     // Obtain the back buffers for this window which will be the final render targets
@@ -242,6 +270,19 @@ void DeviceResources::CreateWindowSizeDependentResources()
 
         CD3DX12_CPU_DESCRIPTOR_HANDLE rtvDescriptor(m_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), n, m_rtvDescriptorSize);
         m_d3dDevice->CreateRenderTargetView(m_renderTargets[n].Get(), &rtvDesc, rtvDescriptor);
+
+        if (m_swapChainGameDVR)
+        {
+            DX::ThrowIfFailed(m_swapChainGameDVR->GetBuffer(n, IID_GRAPHICS_PPV_ARGS(m_renderTargetsGameDVR[n].GetAddressOf())));
+
+            swprintf_s(name, L"GameDVR Render target %u", n);
+            m_renderTargetsGameDVR[n]->SetName(name);
+
+            rtvDesc.Format = m_gameDVRFormat;
+
+            CD3DX12_CPU_DESCRIPTOR_HANDLE rtvDescriptorGameDVR(m_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), m_backBufferCount + n, m_rtvDescriptorSize);
+            m_d3dDevice->CreateRenderTargetView(m_renderTargetsGameDVR[n].Get(), &rtvDesc, rtvDescriptorGameDVR);
+        }
     }
 
     // Reset the index to the current back buffer.
@@ -307,8 +348,20 @@ void DeviceResources::Prepare(D3D12_RESOURCE_STATES beforeState)
     if (beforeState != D3D12_RESOURCE_STATE_RENDER_TARGET)
     {
         // Transition the render target into the correct state to allow for drawing into it.
-        D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_backBufferIndex].Get(), beforeState, D3D12_RESOURCE_STATE_RENDER_TARGET);
-        m_commandList->ResourceBarrier(1, &barrier);
+        if (m_options & c_EnableHDR)
+        {
+            D3D12_RESOURCE_BARRIER barriers[2] =
+            {
+                CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_backBufferIndex].Get(), beforeState, D3D12_RESOURCE_STATE_RENDER_TARGET),
+                CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargetsGameDVR[m_backBufferIndex].Get(), beforeState, D3D12_RESOURCE_STATE_RENDER_TARGET),
+            };
+            m_commandList->ResourceBarrier(_countof(barriers), barriers);
+        }
+        else
+        {
+            D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_backBufferIndex].Get(), beforeState, D3D12_RESOURCE_STATE_RENDER_TARGET);
+            m_commandList->ResourceBarrier(1, &barrier);
+        }
     }
 }
 
@@ -318,18 +371,45 @@ void DeviceResources::Present(D3D12_RESOURCE_STATES beforeState)
     if (beforeState != D3D12_RESOURCE_STATE_PRESENT)
     {
         // Transition the render target to the state that allows it to be presented to the display.
-        D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_backBufferIndex].Get(), beforeState, D3D12_RESOURCE_STATE_PRESENT);
-        m_commandList->ResourceBarrier(1, &barrier);
+        if (m_options & c_EnableHDR)
+        {
+            D3D12_RESOURCE_BARRIER barriers[2] =
+            {
+                CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_backBufferIndex].Get(), beforeState, D3D12_RESOURCE_STATE_PRESENT),
+                CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargetsGameDVR[m_backBufferIndex].Get(), beforeState, D3D12_RESOURCE_STATE_PRESENT),
+            };
+            m_commandList->ResourceBarrier(_countof(barriers), barriers);
+        }
+        else
+        {
+            D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_backBufferIndex].Get(), beforeState, D3D12_RESOURCE_STATE_PRESENT);
+            m_commandList->ResourceBarrier(1, &barrier);
+        }
     }
 
     // Send the command list off to the GPU for processing.
     ThrowIfFailed(m_commandList->Close());
     m_commandQueue->ExecuteCommandLists(1, CommandListCast(m_commandList.GetAddressOf()));
 
-    // The first argument instructs DXGI to block until VSync, putting the application
-    // to sleep until the next VSync. This ensures we don't waste any cycles rendering
-    // frames that will never be displayed to the screen.
-    ThrowIfFailed(m_swapChain->Present(1, 0));
+    if (m_swapChainGameDVR)
+    {
+        IDXGISwapChain1* ppSwapChains[2] = { m_swapChain.Get(), m_swapChainGameDVR.Get() };
+
+        DXGIX_PRESENTARRAY_PARAMETERS presentParameterSets[2] = {};
+        presentParameterSets[0].SourceRect = m_outputSize;
+        presentParameterSets[0].ScaleFactorHorz = 1.0f;
+        presentParameterSets[0].ScaleFactorVert = 1.0f;
+
+        presentParameterSets[1].SourceRect = m_outputSize;
+        presentParameterSets[1].ScaleFactorHorz = 1.0f;
+        presentParameterSets[1].ScaleFactorVert = 1.0f;
+
+        DXGIXPresentArray(1, 0, 0, _countof(presentParameterSets), ppSwapChains, presentParameterSets);
+    }
+    else
+    {
+        ThrowIfFailed(m_swapChain->Present(1, 0));
+    }
 
     // Xbox One apps do not need to handle DXGI_ERROR_DEVICE_REMOVED or DXGI_ERROR_DEVICE_RESET.
 

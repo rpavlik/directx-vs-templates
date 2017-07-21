@@ -10,7 +10,8 @@ namespace DX
     class DeviceResources
     {
     public:
-        static const unsigned int c_Enable4K_UHD = 0x1;
+        static const unsigned int c_Enable4K_UHD    = 0x1;
+        static const unsigned int c_EnableHDR       = 0x2;
 
         DeviceResources(DXGI_FORMAT backBufferFormat = DXGI_FORMAT_B8G8R8A8_UNORM,
                         DXGI_FORMAT depthBufferFormat = DXGI_FORMAT_D32_FLOAT,
@@ -52,6 +53,16 @@ namespace DX
         CD3DX12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const
         {
             return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+        }
+
+        // Direct3D HDR Game DVR support for Xbox One.
+        IDXGISwapChain1*            GetGameDVRSwapChain() const     { return m_swapChainGameDVR.Get(); }
+        ID3D12Resource*             GetGameDVRRenderTarget() const  { return m_renderTargetsGameDVR[m_backBufferIndex].Get(); }
+        DXGI_FORMAT                 GetGameDVRFormat() const        { return m_gameDVRFormat; }
+
+        CD3DX12_CPU_DESCRIPTOR_HANDLE GetGameDVRRenderTargetView() const
+        {
+            return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), m_backBufferCount + m_backBufferIndex, m_rtvDescriptorSize);
         }
 
     private:
@@ -96,5 +107,10 @@ namespace DX
 
         // DeviceResources options (see flags above)
         unsigned int                                        m_options;
+
+        // Direct3D HDR Game DVR support for Xbox One.
+        Microsoft::WRL::ComPtr<IDXGISwapChain1>             m_swapChainGameDVR;
+        Microsoft::WRL::ComPtr<ID3D12Resource>              m_renderTargetsGameDVR[MAX_BACK_BUFFER_COUNT];
+        DXGI_FORMAT                                         m_gameDVRFormat;
     };
 }
