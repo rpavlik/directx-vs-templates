@@ -273,7 +273,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 
         if (m_swapChainGameDVR)
         {
-            DX::ThrowIfFailed(m_swapChainGameDVR->GetBuffer(n, IID_GRAPHICS_PPV_ARGS(m_renderTargetsGameDVR[n].GetAddressOf())));
+            ThrowIfFailed(m_swapChainGameDVR->GetBuffer(n, IID_GRAPHICS_PPV_ARGS(m_renderTargetsGameDVR[n].GetAddressOf())));
 
             swprintf_s(name, L"GameDVR Render target %u", n);
             m_renderTargetsGameDVR[n]->SetName(name);
