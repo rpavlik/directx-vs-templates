@@ -310,9 +310,7 @@ void DeviceResources::Present(UINT decompressFlags)
         presentParameterSets[0].ScaleFactorHorz = 1.0f;
         presentParameterSets[0].ScaleFactorVert = 1.0f;
 
-        presentParameterSets[1].SourceRect = m_outputSize;
-        presentParameterSets[1].ScaleFactorHorz = 1.0f;
-        presentParameterSets[1].ScaleFactorVert = 1.0f;
+        presentParameterSets[1] = presentParameterSets[0];
 
         DXGIXPresentArray(1, 0, 0, _countof(presentParameterSets), ppSwapChains, presentParameterSets);
     }
