@@ -92,6 +92,8 @@ void DeviceResources::CreateDeviceResources()
 
     ThrowIfFailed(m_d3dDevice->CreateDescriptorHeap(&rtvDescriptorHeapDesc, IID_GRAPHICS_PPV_ARGS(m_rtvDescriptorHeap.ReleaseAndGetAddressOf())));
 
+    m_rtvDescriptorHeap->SetName(L"DeviceResources");
+
     m_rtvDescriptorSize = m_d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
     if (m_depthBufferFormat != DXGI_FORMAT_UNKNOWN)
@@ -101,6 +103,8 @@ void DeviceResources::CreateDeviceResources()
         dsvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 
         ThrowIfFailed(m_d3dDevice->CreateDescriptorHeap(&dsvDescriptorHeapDesc, IID_GRAPHICS_PPV_ARGS(m_dsvDescriptorHeap.ReleaseAndGetAddressOf())));
+
+        m_dsvDescriptorHeap->SetName(L"DeviceResources");
     }
 
     // Create a command allocator for each back buffer that will be rendered to.
@@ -273,7 +277,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 
         if (m_swapChainGameDVR)
         {
-            DX::ThrowIfFailed(m_swapChainGameDVR->GetBuffer(n, IID_GRAPHICS_PPV_ARGS(m_renderTargetsGameDVR[n].GetAddressOf())));
+            ThrowIfFailed(m_swapChainGameDVR->GetBuffer(n, IID_GRAPHICS_PPV_ARGS(m_renderTargetsGameDVR[n].GetAddressOf())));
 
             swprintf_s(name, L"GameDVR Render target %u", n);
             m_renderTargetsGameDVR[n]->SetName(name);
@@ -400,9 +404,7 @@ void DeviceResources::Present(D3D12_RESOURCE_STATES beforeState)
         presentParameterSets[0].ScaleFactorHorz = 1.0f;
         presentParameterSets[0].ScaleFactorVert = 1.0f;
 
-        presentParameterSets[1].SourceRect = m_outputSize;
-        presentParameterSets[1].ScaleFactorHorz = 1.0f;
-        presentParameterSets[1].ScaleFactorVert = 1.0f;
+        presentParameterSets[1] = presentParameterSets[0];
 
         DXGIXPresentArray(1, 0, 0, _countof(presentParameterSets), ppSwapChains, presentParameterSets);
     }

@@ -251,6 +251,7 @@ void Game::CreateDevice()
     }
 
     // Check for 4k swapchain support
+#if _XDK_VER >= 0x3F6803F3 /* XDK Edition 170600 */
     D3D12XBOX_GPU_HARDWARE_CONFIGURATION hwConfig = {};
     m_d3dDevice->GetGpuHardwareConfigurationX(&hwConfig);
     if (hwConfig.HardwareVersion >= D3D12XBOX_HARDWARE_VERSION_XBOX_ONE_X)
@@ -258,6 +259,7 @@ void Game::CreateDevice()
         m_outputWidth = 3840;
         m_outputHeight = 2160;
     }
+#endif
 
     // TODO: Initialize device dependent objects here (independent of window size).
 }
