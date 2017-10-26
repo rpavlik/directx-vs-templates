@@ -35,6 +35,8 @@ public:
         CoreApplication::Resuming +=
             ref new EventHandler<Platform::Object^>(this, &ViewProvider::OnResuming);
 
+        CoreApplication::DisableKinectGpuReservation = true;
+
         m_game = std::make_unique<Game>();
     }
 
@@ -111,10 +113,8 @@ public:
 
 // Entry point
 [Platform::MTAThread]
-int __cdecl main(Platform::Array<Platform::String^>^ argv)
+int __cdecl main(Platform::Array<Platform::String^>^ /*argv*/)
 {
-    UNREFERENCED_PARAMETER(argv);
-
     auto viewProviderFactory = ref new ViewProviderFactory();
     CoreApplication::Run(viewProviderFactory);
     return 0;

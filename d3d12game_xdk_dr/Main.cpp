@@ -37,6 +37,8 @@ public:
         CoreApplication::Resuming +=
             ref new EventHandler<Platform::Object^>(this, &ViewProvider::OnResuming);
 
+        CoreApplication::DisableKinectGpuReservation = true;
+
         m_game = std::make_unique<Game>();
 
         if (m_game->RequestHDRMode())

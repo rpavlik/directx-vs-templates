@@ -29,6 +29,8 @@ public:
 
         CoreApplication::Resuming({ this, &ViewProvider::OnResuming });
 
+        CoreApplication::DisableKinectGpuReservation(true);
+
         m_game = std::make_unique<Game>();
     }
 
