@@ -16,4 +16,12 @@ Write-Host "Updating .ZIP files..."
 [IO.Compression.ZipFile]::CreateFromDirectory($src + "d3d11game_uwp_cppwinrt_dr", $vsix + "Direct3DUWPGameCppWinRTDR.zip")
 [IO.Compression.ZipFile]::CreateFromDirectory($src + "d3d12game_uwp_cppwinrt", $vsix + "Direct3D12UWPGameCppWinRT.zip")
 [IO.Compression.ZipFile]::CreateFromDirectory($src + "d3d12game_uwp_cppwinrt_dr", $vsix + "Direct3D12UWPGameCppWinRTDR.zip")
+[IO.Compression.ZipFile]::CreateFromDirectory($src + "d3d11game_xdk", $vsix + "Direct3DXDKGame.zip")
+[IO.Compression.ZipFile]::CreateFromDirectory($src + "d3d11game_xdk_dr", $vsix + "Direct3DXDKGameDR.zip")
+[IO.Compression.ZipFile]::CreateFromDirectory($src + "d3d12game_xdk", $vsix + "Direct3D12XDKGame.zip")
+[IO.Compression.ZipFile]::CreateFromDirectory($src + "d3d12game_xdk_dr", $vsix + "Direct3D12XDKGameDR.zip")
+[IO.Compression.ZipFile]::CreateFromDirectory($src + "d3d11game_xdk_cppwinrt", $vsix + "Direct3DXDKGameCppWinRT.zip")
+[IO.Compression.ZipFile]::CreateFromDirectory($src + "d3d11game_xdk_cppwinrt_dr", $vsix + "Direct3DXDKGameCppWinRTDR.zip")
+[IO.Compression.ZipFile]::CreateFromDirectory($src + "d3d12game_xdk_cppwinrt", $vsix + "Direct3D12XDKGameCppWinRT.zip")
+[IO.Compression.ZipFile]::CreateFromDirectory($src + "d3d12game_xdk_cppwinrt_dr", $vsix + "Direct3D12XDKGameCppWinRTDR.zip")
 Write-Host "Completed."

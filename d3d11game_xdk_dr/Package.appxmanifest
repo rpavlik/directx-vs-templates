@@ -39,7 +39,9 @@
         </VisualElements>
         <Extensions>
           <mx:Extension Category="xbox.system.resources">
-            <mx:XboxSystemResources />
+            <mx:XboxSystemResources resourceConfiguration="extended">
+              <mx:GpuAvailability>variable</mx:GpuAvailability>
+            </mx:XboxSystemResources>
           </mx:Extension>
         </Extensions>
     </Application>
