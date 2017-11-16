@@ -102,13 +102,14 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalOptions>/await /std:c++latest %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/await$if$('$platformtoolset$'=='v140') /std:c++latest$endif$ %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>NDEBUG;__WRL_NO_DEFAULT_LIB__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAsWinRT>false</CompileAsWinRT>$if$('$platformtoolset$'=='v141')
+      <LanguageStandard>stdcpp17</LanguageStandard>$endif$
     </ClCompile>
     <FXCompile>
       <ShaderModel>5.1</ShaderModel>
@@ -128,13 +129,14 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalOptions>/await /std:c++latest %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/await$if$('$platformtoolset$'=='v140') /std:c++latest$endif$ %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>NDEBUG;__WRL_NO_DEFAULT_LIB__;PROFILE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAsWinRT>false</CompileAsWinRT>$if$('$platformtoolset$'=='v141')
+      <LanguageStandard>stdcpp17</LanguageStandard>$endif$
     </ClCompile>
     <FXCompile>
       <ShaderModel>5.1</ShaderModel>
@@ -151,11 +153,12 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <MinimalRebuild>false</MinimalRebuild>
-      <AdditionalOptions>/await /std:c++latest %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/await$if$('$platformtoolset$'=='v140') /std:c++latest$endif$ %(AdditionalOptions)</AdditionalOptions>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;__WRL_NO_DEFAULT_LIB__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <CompileAsWinRT>false</CompileAsWinRT>
+      <CompileAsWinRT>false</CompileAsWinRT>$if$('$platformtoolset$'=='v141')
+      <LanguageStandard>stdcpp17</LanguageStandard>$endif$
     </ClCompile>
     <FXCompile>
       <ShaderModel>5.1</ShaderModel>
