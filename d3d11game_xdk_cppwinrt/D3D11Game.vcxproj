@@ -103,6 +103,8 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories />
+      <ForcedUsingFiles />
       <AdditionalOptions>/await$if$('$platformtoolset$'=='v140') /std:c++latest$endif$ %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>NDEBUG;__WRL_NO_DEFAULT_LIB__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -131,6 +133,8 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories />
+      <ForcedUsingFiles />
       <AdditionalOptions>/await$if$('$platformtoolset$'=='v140') /std:c++latest$endif$ %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>NDEBUG;__WRL_NO_DEFAULT_LIB__;PROFILE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -155,6 +159,8 @@
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalUsingDirectories />
+      <ForcedUsingFiles />
       <MinimalRebuild>false</MinimalRebuild>
       <AdditionalOptions>/await$if$('$platformtoolset$'=='v140') /std:c++latest$endif$ %(AdditionalOptions)</AdditionalOptions>
       <WarningLevel>Level4</WarningLevel>
