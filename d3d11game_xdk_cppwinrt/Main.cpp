@@ -43,7 +43,7 @@ public:
     {
         window.Closed({ this, &ViewProvider::OnWindowClosed });
 
-        ::IUnknown* windowPtr = winrt::get_abi(window);
+        auto windowPtr = static_cast<::IUnknown*>(winrt::get_abi(window));
         m_game->Initialize(windowPtr);
     }
 
@@ -72,7 +72,7 @@ protected:
     {
         auto deferral = args.SuspendingOperation().GetDeferral();
 
-        std::async(std::launch::async, [this, deferral]()
+        auto f = std::async(std::launch::async, [this, deferral]()
         {
             m_game->OnSuspending();
 
