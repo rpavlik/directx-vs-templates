@@ -108,7 +108,8 @@ public:
             std::swap(outputWidth, outputHeight);
         }
 
-        m_game->Initialize(winrt::get_abi(window), outputWidth, outputHeight, rotation);
+        auto windowPtr = static_cast<::IUnknown*>(winrt::get_abi(window));
+        m_game->Initialize(windowPtr, outputWidth, outputHeight, rotation);
     }
 
     void Load(winrt::hstring const &)
@@ -177,7 +178,7 @@ protected:
     {
         auto deferral = args.SuspendingOperation().GetDeferral();
 
-        std::async(std::launch::async, [this, deferral]()
+        auto f = std::async(std::launch::async, [this, deferral]()
         {
             m_game->OnSuspending();
 
