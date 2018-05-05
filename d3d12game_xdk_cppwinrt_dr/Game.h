@@ -14,7 +14,7 @@ class Game
 {
 public:
 
-    Game();
+    Game() noexcept(false);
 
     // Initialization and management
     void Initialize(IUnknown* window);

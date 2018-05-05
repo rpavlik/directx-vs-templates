@@ -13,7 +13,7 @@ using namespace winrt::Windows::Foundation::Collections;
 
 using Microsoft::WRL::ComPtr;
 
-Game::Game() :
+Game::Game() noexcept(false) :
     m_frame(0)
 {
     m_deviceResources = std::make_unique<DX::DeviceResources>();
