@@ -105,7 +105,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories />
       <ForcedUsingFiles />
-      <AdditionalOptions>/await$if$('$platformtoolset$'=='v140') /std:c++latest$endif$$if$('$platformtoolset$'=='v141') /Zc:twoPhase-$endif$ %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/await$if$('$platformtoolset$'=='v140') /std:c++latest$endif$ %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>NDEBUG;__WRL_NO_DEFAULT_LIB__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level4</WarningLevel>
@@ -135,7 +135,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories />
       <ForcedUsingFiles />
-      <AdditionalOptions>/await$if$('$platformtoolset$'=='v140') /std:c++latest$endif$$if$('$platformtoolset$'=='v141') /Zc:twoPhase-$endif$ %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/await$if$('$platformtoolset$'=='v140') /std:c++latest$endif$ %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>NDEBUG;__WRL_NO_DEFAULT_LIB__;PROFILE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level4</WarningLevel>
@@ -162,7 +162,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <AdditionalUsingDirectories />
       <ForcedUsingFiles />
-      <AdditionalOptions>/await$if$('$platformtoolset$'=='v140') /std:c++latest$endif$$if$('$platformtoolset$'=='v141') /Zc:twoPhase-$endif$ %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/await$if$('$platformtoolset$'=='v140') /std:c++latest$endif$ %(AdditionalOptions)</AdditionalOptions>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;__WRL_NO_DEFAULT_LIB__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
