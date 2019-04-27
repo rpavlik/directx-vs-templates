@@ -12,7 +12,7 @@ using namespace winrt::Windows::UI::Core;
 using namespace winrt::Windows::Foundation;
 using namespace DirectX;
 
-class ViewProvider final : public winrt::implements<ViewProvider, IFrameworkView>
+class ViewProvider : public winrt::implements<ViewProvider, IFrameworkView>
 {
 public:
     ViewProvider() :
@@ -95,7 +95,7 @@ private:
     std::unique_ptr<Game>   m_game;
 };
 
-class ViewProviderFactory final : public winrt::implements<ViewProviderFactory, IFrameworkViewSource>
+class ViewProviderFactory : public winrt::implements<ViewProviderFactory, IFrameworkViewSource>
 {
 public:
     IFrameworkView CreateView()
@@ -110,7 +110,7 @@ int WINAPIV WinMain()
 {
     winrt::init_apartment();
 
-    ViewProviderFactory viewProviderFactory;
+    auto viewProviderFactory = winrt::make<ViewProviderFactory>();
     CoreApplication::Run(viewProviderFactory);
 
     winrt::uninit_apartment();
