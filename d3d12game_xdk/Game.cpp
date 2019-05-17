@@ -124,7 +124,9 @@ void Game::Clear()
     XMVECTORF32 clearColor;
     clearColor.v = XMColorSRGBToRGB(Colors::CornflowerBlue);
 
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvDescriptor(m_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), m_backBufferIndex, m_rtvDescriptorSize);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvDescriptor(
+        m_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+        static_cast<INT>(m_backBufferIndex), m_rtvDescriptorSize);
     CD3DX12_CPU_DESCRIPTOR_HANDLE dsvDescriptor(m_dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
     m_commandList->OMSetRenderTargets(1, &rtvDescriptor, FALSE, &dsvDescriptor);
     m_commandList->ClearRenderTargetView(rtvDescriptor, clearColor, 0, nullptr);
@@ -132,7 +134,7 @@ void Game::Clear()
 
     // Set the viewport and scissor rect.
     D3D12_VIEWPORT viewport = { 0.0f, 0.0f, static_cast<float>(m_outputWidth), static_cast<float>(m_outputHeight), D3D12_MIN_DEPTH, D3D12_MAX_DEPTH };
-    D3D12_RECT scissorRect = { 0, 0, m_outputWidth, m_outputHeight };
+    D3D12_RECT scissorRect = { 0, 0, static_cast<LONG>(m_outputWidth), static_cast<LONG>(m_outputHeight) };
     m_commandList->RSSetViewports(1, &viewport);
     m_commandList->RSSetScissorRects(1, &scissorRect);
 
