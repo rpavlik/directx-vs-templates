@@ -292,7 +292,9 @@ void DeviceResources::CreateWindowSizeDependentResources()
 
             rtvDesc.Format = m_gameDVRFormat;
 
-            CD3DX12_CPU_DESCRIPTOR_HANDLE rtvDescriptorGameDVR(m_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), m_backBufferCount + n, m_rtvDescriptorSize);
+            CD3DX12_CPU_DESCRIPTOR_HANDLE rtvDescriptorGameDVR(
+                m_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+                static_cast<INT>(m_backBufferCount + n), m_rtvDescriptorSize);
             m_d3dDevice->CreateRenderTargetView(m_renderTargetsGameDVR[n].Get(), &rtvDesc, rtvDescriptorGameDVR);
         }
     }
