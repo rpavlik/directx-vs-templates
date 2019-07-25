@@ -342,7 +342,9 @@ void Game::CreateResources()
             m_renderTargets[n]->SetName(name);
         }
 
-        CD3DX12_CPU_DESCRIPTOR_HANDLE rtvDescriptor(m_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), n, m_rtvDescriptorSize);
+        CD3DX12_CPU_DESCRIPTOR_HANDLE rtvDescriptor(
+            m_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+            static_cast<INT>(n), m_rtvDescriptorSize);
         m_d3dDevice->CreateRenderTargetView(m_renderTargets[n].Get(), nullptr, rtvDescriptor);
     }
 
