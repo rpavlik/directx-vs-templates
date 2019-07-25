@@ -151,7 +151,8 @@ void DeviceResources::CreateDeviceResources()
         D3D12_MESSAGE_ID hide[] =
         {
             D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,
-            D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE
+            D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
+            D3D12_MESSAGE_ID_EXECUTECOMMANDLISTS_WRONGSWAPCHAINBUFFERREFERENCE
         };
         D3D12_INFO_QUEUE_FILTER filter = {};
         filter.DenyList.NumIDs = _countof(hide);
@@ -276,7 +277,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
             backBufferWidth,
             backBufferHeight,
             backBufferFormat,
-            (m_options & c_AllowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0
+            (m_options & c_AllowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u
             );
 
         if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
@@ -312,7 +313,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
         swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
         swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
         swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
-        swapChainDesc.Flags = (m_options & c_AllowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+        swapChainDesc.Flags = (m_options & c_AllowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u;
 
         DXGI_SWAP_CHAIN_FULLSCREEN_DESC fsSwapChainDesc = {};
         fsSwapChainDesc.Windowed = TRUE;
@@ -610,10 +611,10 @@ void DeviceResources::GetAdapter(IDXGIAdapter1** ppAdapter)
     if (SUCCEEDED(hr))
     {
         for (UINT adapterIndex = 0;
-            DXGI_ERROR_NOT_FOUND != factory6->EnumAdapterByGpuPreference(
+            SUCCEEDED(factory6->EnumAdapterByGpuPreference(
                 adapterIndex,
                 DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
-                IID_PPV_ARGS(adapter.ReleaseAndGetAddressOf()));
+                IID_PPV_ARGS(adapter.ReleaseAndGetAddressOf())));
             adapterIndex++)
         {
             DXGI_ADAPTER_DESC1 desc;
@@ -628,41 +629,43 @@ void DeviceResources::GetAdapter(IDXGIAdapter1** ppAdapter)
             // Check to see if the adapter supports Direct3D 12, but don't create the actual device yet.
             if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), m_d3dMinFeatureLevel, _uuidof(ID3D12Device), nullptr)))
             {
-            #ifdef _DEBUG
+#ifdef _DEBUG
                 wchar_t buff[256] = {};
                 swprintf_s(buff, L"Direct3D Adapter (%u): VID:%04X, PID:%04X - %ls\n", adapterIndex, desc.VendorId, desc.DeviceId, desc.Description);
                 OutputDebugStringW(buff);
-            #endif
+#endif
                 break;
             }
         }
     }
-    else
 #endif
-    for (UINT adapterIndex = 0;
-        DXGI_ERROR_NOT_FOUND != m_dxgiFactory->EnumAdapters1(
-            adapterIndex,
-            adapter.ReleaseAndGetAddressOf());
-        ++adapterIndex)
+    if (!adapter)
     {
-        DXGI_ADAPTER_DESC1 desc;
-        ThrowIfFailed(adapter->GetDesc1(&desc));
-
-        if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+        for (UINT adapterIndex = 0;
+            SUCCEEDED(m_dxgiFactory->EnumAdapters1(
+                adapterIndex,
+                adapter.ReleaseAndGetAddressOf()));
+            ++adapterIndex)
         {
-            // Don't select the Basic Render Driver adapter.
-            continue;
-        }
+            DXGI_ADAPTER_DESC1 desc;
+            ThrowIfFailed(adapter->GetDesc1(&desc));
 
-        // Check to see if the adapter supports Direct3D 12, but don't create the actual device yet.
-        if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), m_d3dMinFeatureLevel, _uuidof(ID3D12Device), nullptr)))
-        {
-        #ifdef _DEBUG
-            wchar_t buff[256] = {};
-            swprintf_s(buff, L"Direct3D Adapter (%u): VID:%04X, PID:%04X - %ls\n", adapterIndex, desc.VendorId, desc.DeviceId, desc.Description);
-            OutputDebugStringW(buff);
-        #endif
-            break;
+            if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+            {
+                // Don't select the Basic Render Driver adapter.
+                continue;
+            }
+
+            // Check to see if the adapter supports Direct3D 12, but don't create the actual device yet.
+            if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), m_d3dMinFeatureLevel, _uuidof(ID3D12Device), nullptr)))
+            {
+#ifdef _DEBUG
+                wchar_t buff[256] = {};
+                swprintf_s(buff, L"Direct3D Adapter (%u): VID:%04X, PID:%04X - %ls\n", adapterIndex, desc.VendorId, desc.DeviceId, desc.Description);
+                OutputDebugStringW(buff);
+#endif
+                break;
+            }
         }
     }
 
