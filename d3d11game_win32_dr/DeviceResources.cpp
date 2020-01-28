@@ -1,4 +1,4 @@
-﻿//
+//
 // DeviceResources.cpp - A wrapper for the Direct3D 11 device and swapchain
 //                       (requires DirectX 11.1 Runtime)
 //
@@ -10,6 +10,12 @@ using namespace DirectX;
 using namespace DX;
 
 using Microsoft::WRL::ComPtr;
+
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wcovered-switch-default"
+#endif
+
+#pragma warning(disable : 4061)
 
 namespace
 {
