@@ -195,11 +195,11 @@ void Game::CreateDevice()
 // Allocate all memory resources that change on a window SizeChanged event.
 void Game::CreateResources()
 {
-    UINT backBufferWidth = static_cast<UINT>(m_outputWidth);
-    UINT backBufferHeight = static_cast<UINT>(m_outputHeight);
-    DXGI_FORMAT backBufferFormat = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
-    DXGI_FORMAT depthBufferFormat = DXGI_FORMAT_D32_FLOAT;
-    UINT backBufferCount = 2;
+    const UINT backBufferWidth = static_cast<UINT>(m_outputWidth);
+    const UINT backBufferHeight = static_cast<UINT>(m_outputHeight);
+    const DXGI_FORMAT backBufferFormat = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+    const DXGI_FORMAT depthBufferFormat = DXGI_FORMAT_D32_FLOAT;
+    constexpr UINT backBufferCount = 2;
 
     // If the swap chain already exists, resize it, otherwise create one.
     if (m_swapChain)

@@ -15,7 +15,7 @@ using namespace DirectX;
 class ViewProvider : public winrt::implements<ViewProvider, IFrameworkView>
 {
 public:
-    ViewProvider() :
+    ViewProvider() noexcept :
         m_exit(false)
     {
     }
@@ -34,7 +34,7 @@ public:
         m_game = std::make_unique<Game>();
     }
 
-    void Uninitialize()
+    void Uninitialize() noexcept
     {
         m_game.reset();
     }
@@ -47,7 +47,7 @@ public:
         m_game->Initialize(windowPtr);
     }
 
-    void Load(winrt::hstring const & /*entryPoint*/)
+    void Load(winrt::hstring const & /*entryPoint*/) noexcept
     {
     }
 

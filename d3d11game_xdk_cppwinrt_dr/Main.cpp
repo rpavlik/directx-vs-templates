@@ -17,7 +17,7 @@ bool g_HDRMode = false;
 class ViewProvider : public winrt::implements<ViewProvider, IFrameworkView>
 {
 public:
-    ViewProvider() :
+    ViewProvider() noexcept :
         m_exit(false)
     {
     }
@@ -56,7 +56,7 @@ public:
         }
     }
 
-    void Uninitialize()
+    void Uninitialize() noexcept
     {
         m_game.reset();
     }
@@ -69,7 +69,7 @@ public:
         m_game->Initialize(windowPtr);
     }
 
-    void Load(winrt::hstring const & /*entryPoint*/)
+    void Load(winrt::hstring const & /*entryPoint*/) noexcept
     {
     }
 
@@ -141,7 +141,7 @@ int WINAPIV WinMain()
 
 
 // Exit helper
-void ExitGame()
+void ExitGame() noexcept
 {
     winrt::Windows::ApplicationModel::Core::CoreApplication::Exit();
 }
