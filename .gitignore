@@ -19,4 +19,5 @@
 bin/
 obj/
 wiki/
+out/
 /VSIX/src/Direct3DGame/ProjectTemplates/
