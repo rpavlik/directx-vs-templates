@@ -41,7 +41,7 @@ void Game::Initialize(IUnknown* window)
 // Executes the basic game loop.
 void Game::Tick()
 {
-    PIXBeginEvent(EVT_COLOR_FRAME, L"Frame %I64u", m_frame);
+    PIXBeginEvent(EVT_COLOR_FRAME, L"Frame %llu", m_frame);
 
     m_timer.Tick([&]()
     {
