@@ -134,16 +134,14 @@ void Game::Clear()
 // Message handlers
 void Game::OnSuspending()
 {
-    auto context = m_deviceResources->GetD3DDeviceContext();
-    context->Suspend(0);
+    m_deviceResources->Suspend();
 
     // TODO: Save game progress using the ConnectedStorage API.
 }
 
 void Game::OnResuming()
 {
-    auto context = m_deviceResources->GetD3DDeviceContext();
-    context->Resume();
+    m_deviceResources->Resume();
     m_timer.ResetElapsedTime();
 
     // TODO: Handle changes in users and input devices.

@@ -325,3 +325,20 @@ void DeviceResources::Present(UINT decompressFlags)
 
     // Xbox One apps do not need to handle DXGI_ERROR_DEVICE_REMOVED or DXGI_ERROR_DEVICE_RESET.
 }
+
+// Handle GPU suspend/resume
+void DeviceResources::Suspend() noexcept
+{
+    if (m_d3dContext)
+    {
+        (void)m_d3dContext->Suspend(0);
+    }
+}
+
+void DeviceResources::Resume() noexcept
+{
+    if (m_d3dContext)
+    {
+        (void)m_d3dContext->Resume();
+    }
+}

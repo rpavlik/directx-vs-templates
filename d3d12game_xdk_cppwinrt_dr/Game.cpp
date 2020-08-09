@@ -137,8 +137,7 @@ void Game::Clear()
 // Occurs when the game is being suspended.
 void Game::OnSuspending()
 {
-    auto queue = m_deviceResources->GetCommandQueue();
-    queue->SuspendX(0);
+    m_deviceResources->Suspend();
 
     // TODO: Save game progress using the ConnectedStorage API.
 }
@@ -146,8 +145,7 @@ void Game::OnSuspending()
 // Occurs when the game is resuming.
 void Game::OnResuming()
 {
-    auto queue = m_deviceResources->GetCommandQueue();
-    queue->ResumeX();
+    m_deviceResources->Resume();
     m_timer.ResetElapsedTime();
 
     // TODO: Handle changes in users and input devices.
