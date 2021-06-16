@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2015-2021 Microsoft Corp
+//
+// SPDX-License-Identifier: MIT
+
 //
 // Game.h
 //

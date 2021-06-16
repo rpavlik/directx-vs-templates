@@ -1,9 +1,7 @@
-//*********************************************************
-//
 // Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License (MIT).
+// SPDX-FileCopyrightText: 2015-2021 Microsoft Corp
 //
-//*********************************************************
+// SPDX-License-Identifier: MIT
 
 #ifndef __D3DX12_H__
 #define __D3DX12_H__

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2015-2021 Microsoft Corp
+#
+# SPDX-License-Identifier: MIT
+
 cmake_minimum_required (VERSION 3.11)
 
 project(CMakeDirect3D12Game

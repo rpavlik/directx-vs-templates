@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+SPDX-FileCopyrightText: 2015-2021 Microsoft Corp
+
+SPDX-License-Identifier: MIT
+-->
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
         <Identity Id="Direct3DUWPGame-1" Version="7.3" Language="en-US" Publisher="MSFT" />

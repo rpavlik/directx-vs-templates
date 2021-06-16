@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2015-2021 Microsoft Corp
+//
+// SPDX-License-Identifier: MIT
+
 //
 // DeviceResources.h - A wrapper for the Direct3D 12 device and swapchain
 //

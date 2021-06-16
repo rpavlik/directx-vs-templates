@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2015-2021 Microsoft Corp
+//
+// SPDX-License-Identifier: MIT
+
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;

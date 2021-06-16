@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2015-2021 Microsoft Corp
+//
+// SPDX-License-Identifier: MIT
+
 //
 // DeviceResources.cpp - A wrapper for the Direct3D 11 device and swapchain
 //                       (requires DirectX 11.3 Runtime)

@@ -1,4 +1,9 @@
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <!--
+  SPDX-FileCopyrightText: 2015-2021 Microsoft Corp
+
+  SPDX-License-Identifier: MIT
+  -->
   <TemplateData>
     <Name>Direct3D UWP Game DR (C++/WinRT)</Name>
     <Description>A project for a universal Windows app game that uses Direct3D 11 and C++/WinRT with DeviceResources abstraction</Description>

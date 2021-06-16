@@ -1,4 +1,11 @@
 # Direct3D Game VS project templates
+
+<!--
+SPDX-FileCopyrightText: 2015-2021 Microsoft Corp
+
+SPDX-License-Identifier: MIT
+-->
+
 This repo contains simplified Visual C++ project templates. They are primarily intended for developer education, samples, and tutorials.
 
 See [this blog post](https://walbourn.github.io/direct3d-win32-game-visual-studio-template/) and [this one](https://walbourn.github.io/direct3d-game-visual-studio-templates-redux/).
